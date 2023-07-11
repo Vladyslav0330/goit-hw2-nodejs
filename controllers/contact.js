@@ -4,21 +4,22 @@ const { Contact } = require("../models/contacts");
 
 const getAll = async (req, res, next) => {
   const { _id: owner } = req.user;
-  const { page = 1, limit = 10, favorite } = req.query;
-  const skip = (page - 1) * limit;
 
-  const result = await Contact.find({ owner }, { skip, limit }).populate(
+  const { page = 1, limit = 20, favorite } = req.query;
+  const skip = (page - 1) * limit;
+  const result = await Contact.find({ owner }, " ", { skip, limit }).populate(
     "owner",
     "name email"
   );
-  if (favorite) {
-    const filteredResult = result.filter((item) => {
-      return item.favorite === Boolean(favorite);
-    });
-    res.json(filteredResult);
-  } else {
-    res.json(result);
-  }
+  res.json(result);
+
+  // if (favorite) {
+  //   const filteredResult = result.filter((item) => {
+  //     return item.favorite === Boolean(favorite);
+  //   });
+  //   res.json(filteredResult);
+  // } else {
+  // }
 };
 
 const getById = async (req, res, next) => {
@@ -32,7 +33,7 @@ const getById = async (req, res, next) => {
 
 const add = async (req, res, next) => {
   const { _id: owner } = req.user;
-  const result = await Contact.create({ ...req.body, owner });
+  const result = await Contact.create(...req.body, owner);
   res.status(201).json(result);
 };
 
@@ -46,8 +47,7 @@ const update = async (req, res, next) => {
   }
   res.json(result);
 };
-
-const updateFavorite = async (req, res) => {
+const updateFavorite = async (req, res, next) => {
   const { contactId } = req.params;
   const result = await Contact.findByIdAndUpdate(contactId, req.body, {
     new: true,
@@ -60,7 +60,7 @@ const updateFavorite = async (req, res) => {
 
 const deleteById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndRemove(contactId);
+  const result = await Contact.findByIdAndDelete(contactId);
   if (!result) {
     throw new RequestError(404, "Not found");
   }
