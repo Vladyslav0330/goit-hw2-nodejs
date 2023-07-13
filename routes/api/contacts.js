@@ -26,6 +26,7 @@ router.put(
   isValidId,
   validateFavorite,
   authenticate,
+
   validateBody(schemas.addschema),
   ctrl.update
 );
@@ -34,6 +35,7 @@ router.patch(
   "/:contactId/favorite",
   isValidId,
   authenticate,
+  validateFavorite,
   validateBody(schemas.updateFavoriteSchemas),
   ctrl.updateFavorite
 );
